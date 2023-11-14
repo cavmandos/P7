@@ -3,11 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: '`user`')]
 class User
 {
     #[ORM\Id]
@@ -24,14 +22,11 @@ class User
     #[ORM\Column(length: 255)]
     private ?string $email = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $password = null;
-
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column(type: Types::ARRAY, nullable: true)]
-    private ?array $role = null;
+    #[ORM\ManyToOne(inversedBy: 'users')]
+    private ?Customer $customer = null;
 
     public function getId(): ?int
     {
@@ -74,18 +69,6 @@ class User
         return $this;
     }
 
-    public function getPassword(): ?string
-    {
-        return $this->password;
-    }
-
-    public function setPassword(string $password): static
-    {
-        $this->password = $password;
-
-        return $this;
-    }
-
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
@@ -98,15 +81,16 @@ class User
         return $this;
     }
 
-    public function getRole(): ?array
+    public function getCustomer(): ?Customer
     {
-        return $this->role;
+        return $this->customer;
     }
 
-    public function setRole(?array $role): static
+    public function setCustomer(?Customer $customer): static
     {
-        $this->role = $role;
+        $this->customer = $customer;
 
         return $this;
     }
+
 }
