@@ -21,6 +21,16 @@ class MobileRepository extends ServiceEntityRepository
         parent::__construct($registry, Mobile::class);
     }
 
+    public function findAllWithPagination($page, $limit) {
+        $qb = $this->createQueryBuilder('b')
+            ->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit);
+        
+        $query = $qb->getQuery();
+        $query->setFetchMode(Mobile::class, "author", \Doctrine\ORM\Mapping\ClassMetadata::FETCH_EAGER);
+        return $query->getResult();
+    }
+
 //    /**
 //     * @return Mobile[] Returns an array of Mobile objects
 //     */

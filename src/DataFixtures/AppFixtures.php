@@ -46,26 +46,26 @@ class AppFixtures extends Fixture
 
         // Admin
         $customerAdmin = new Customer();
-        $customerAdmin->setUsername("Admin");
+        $customerAdmin->setName("Admin");
         $customerAdmin->setEmail("admin@mail.com");
-        $customerAdmin->setPassword($this->userPasswordHasher->hashPassword($customerAdmin, "1234"));
+        $customerAdmin->setPassword($this->userPasswordHasher->hashPassword($customerAdmin, "password"));
         $customerAdmin->setRoles(["ROLE_ADMIN"]);
         $manager->persist($customerAdmin);
 
         // Customer 1
         $customer1 = new Customer();
-        $customer1->setUsername("GerardMOBILE");
+        $customer1->setName("GerardMOBILE");
         $customer1->setEmail("store1@mail.com");
-        $customer1->setPassword($this->userPasswordHasher->hashPassword($customer1, "1234"));
+        $customer1->setPassword($this->userPasswordHasher->hashPassword($customer1, "password"));
         $customer1->setRoles(["ROLE_ADMIN"]);
         $manager->persist($customer1);
         $listCustomer[] = $customer1;
 
         // Customer 2
         $customer2 = new Customer();
-        $customer2->setUsername("LaFnak");
+        $customer2->setName("LaFnak");
         $customer2->setEmail("store2@mail.com");
-        $customer2->setPassword($this->userPasswordHasher->hashPassword($customer2, "1234"));
+        $customer2->setPassword($this->userPasswordHasher->hashPassword($customer2, "password"));
         $customer2->setRoles(["ROLE_ADMIN"]);
         $manager->persist($customer2);
         $listCustomer[] = $customer2;

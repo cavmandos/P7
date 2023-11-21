@@ -5,21 +5,31 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class UserController extends AbstractController
 {
     #[Route('/api/users', name: 'user', methods: ['GET'])]
-    public function getMobileList(UserRepository $userRepository, SerializerInterface $serializer): JsonResponse
+    public function getMobileList(UserRepository $userRepository, SerializerInterface $serializer, Request $request, TagAwareCacheInterface $cachePool): JsonResponse
     {
-        $userList = $userRepository->findAll();
+        $page = $request->get('page', 1);
+        $limit = $request->get('limit', 3);
+        $idCache = "getUserList-" . $page . "-" . $limit;
+        $userList = $cachePool->get($idCache, function (ItemInterface $item) use ($userRepository, $page, $limit) {
+            $item->tag("usersCache");
+            return $userRepository->findAllWithPagination($page, $limit);
+        });
+
         $jsonUserList = $serializer->serialize($userList, 'json', ['groups' => 'getUser']);
         return new JsonResponse($jsonUserList, Response::HTTP_OK, [], true);
     }
@@ -32,14 +42,17 @@ class UserController extends AbstractController
     }
 
     #[Route('/api/users/{id}', name: 'deleteUser', methods: ['DELETE'])]
-    public function deleteUser(User $user, EntityManagerInterface $entityManagerInterface): JsonResponse 
+    #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits suffisants pour supprimer un utilisateur')]
+    public function deleteUser(User $user, EntityManagerInterface $entityManagerInterface, TagAwareCacheInterface $cachePool): JsonResponse 
     {
+        $cachePool->invalidateTags(["usersCache"]);
         $entityManagerInterface->remove($user);
         $entityManagerInterface->flush();
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
     #[Route('/api/users', name:"createUser", methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits suffisants pour créer un utilisateur')]
     public function createUser(Request $request, SerializerInterface $serializer, EntityManagerInterface $entityManagerInterface, UrlGeneratorInterface $urlGenerator, ValidatorInterface $validator): JsonResponse 
     {
         /** @var User $user  */ 
