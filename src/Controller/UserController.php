@@ -20,7 +20,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class UserController extends AbstractController
 {
     #[Route('/api/users', name: 'user', methods: ['GET'])]
-    public function getMobileList(UserRepository $userRepository, SerializerInterface $serializer, Request $request, TagAwareCacheInterface $cachePool): JsonResponse
+    public function getUserList(UserRepository $userRepository, SerializerInterface $serializer, Request $request, TagAwareCacheInterface $cachePool): JsonResponse
     {
         $page = $request->get('page', 1);
         $limit = $request->get('limit', 3);
@@ -35,10 +35,15 @@ class UserController extends AbstractController
     }
 
     #[Route('/api/users/{id}', name: 'detailUser', methods: ['GET'])]
-    public function getDetailUser(User $user, SerializerInterface $serializer): JsonResponse 
+    public function getDetailUser(User $user, SerializerInterface $serializer, TagAwareCacheInterface $cachePool): JsonResponse 
     {
-        $jsonUser = $serializer->serialize($user, 'json', ['groups' => 'getUser']);
-        return new JsonResponse($jsonUser, Response::HTTP_OK, ['accept' => 'json'], true);
+        $idCache = "getUserDetail-" . $user->getId();
+        $userDetail = $cachePool->get($idCache, function (ItemInterface $item) use ($user, $serializer) {
+            $item->tag("userCache");
+            return $serializer->serialize($user, 'json', ['groups' => 'getUser']);
+        });
+
+        return new JsonResponse($userDetail, Response::HTTP_OK, ['accept' => 'json'], true);
     }
 
     #[Route('/api/users/{id}', name: 'deleteUser', methods: ['DELETE'])]
