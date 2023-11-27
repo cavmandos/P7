@@ -5,7 +5,18 @@ namespace App\Entity;
 use App\Repository\MobileRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Hateoas\Configuration\Annotation as Hateoas;
 
+/**
+ * @Hateoas\Relation(
+ *      "self",
+ *      href = @Hateoas\Route(
+ *          "detailMobile",
+ *          parameters = { "id" = "expr(object.getId())" }
+ *      )
+ * )
+ *
+ */
 #[ORM\Entity(repositoryClass: MobileRepository::class)]
 class Mobile
 {

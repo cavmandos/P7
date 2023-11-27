@@ -5,13 +5,14 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use JMS\Serializer\SerializationContext;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
-use Symfony\Component\Serializer\SerializerInterface;
+use JMS\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -29,8 +30,8 @@ class UserController extends AbstractController
             $item->tag("usersCache");
             return $userRepository->findAllWithPagination($page, $limit);
         });
-
-        $jsonUserList = $serializer->serialize($userList, 'json', ['groups' => 'getUser']);
+        $context = SerializationContext::create()->setGroups(['getUser']);
+        $jsonUserList = $serializer->serialize($userList, 'json', $context);
         return new JsonResponse($jsonUserList, Response::HTTP_OK, [], true);
     }
 
@@ -40,7 +41,8 @@ class UserController extends AbstractController
         $idCache = "getUserDetail-" . $user->getId();
         $userDetail = $cachePool->get($idCache, function (ItemInterface $item) use ($user, $serializer) {
             $item->tag("userCache");
-            return $serializer->serialize($user, 'json', ['groups' => 'getUser']);
+            $context = SerializationContext::create()->setGroups(['getUser']);
+            return $serializer->serialize($user, 'json', $context);
         });
 
         return new JsonResponse($userDetail, Response::HTTP_OK, ['accept' => 'json'], true);
@@ -71,7 +73,8 @@ class UserController extends AbstractController
 
         $entityManagerInterface->persist($user);
         $entityManagerInterface->flush();
-        $jsonUser = $serializer->serialize($user, 'json', ['groups' => 'getUser']);
+        $context = SerializationContext::create()->setGroups(['getUser']);
+        $jsonUser = $serializer->serialize($user, 'json', $context);
         $location = $urlGenerator->generate('detailUser', ['id' => $user->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
         return new JsonResponse($jsonUser, Response::HTTP_CREATED, ["Location" => $location], true);
    }
