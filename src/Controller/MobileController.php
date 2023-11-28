@@ -12,9 +12,43 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
+use OpenApi\Annotations as OA;
 
 class MobileController extends AbstractController
 {
+    /**
+     * Cette méthode permet de récupérer l'ensemble des téléphones mobiles.
+     *
+     * @OA\Response(
+     *     response=200,
+     *     description="Retourne la liste des mobiles",
+     *     @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=Mobile::class))
+     *     )
+     * )
+     * @OA\Parameter(
+     *     name="page",
+     *     in="query",
+     *     description="La page que l'on veut récupérer",
+     *     @OA\Schema(type="int")
+     * )
+     *
+     * @OA\Parameter(
+     *     name="limit",
+     *     in="query",
+     *     description="Le nombre d'éléments que l'on veut récupérer",
+     *     @OA\Schema(type="int")
+     * )
+     * @OA\Tag(name="Mobiles")
+     *
+     * @param MobileRepository $mobileRepository
+     * @param SerializerInterface $serializer
+     * @param Request $request
+     * @return JsonResponse
+     */
     #[Route('/api/mobiles', name: 'mobile', methods: ['GET'])]
     public function getMobileList(MobileRepository $mobileRepository, SerializerInterface $serializer, Request $request, TagAwareCacheInterface $cachePool): JsonResponse
     {
@@ -31,6 +65,25 @@ class MobileController extends AbstractController
         return new JsonResponse($jsonMobileList, Response::HTTP_OK, [], true);
     }
 
+    /**
+     * Cette méthode permet de récupérer le détail d'un téléphone mobile.
+     *
+     * @OA\Response(
+     *     response=200,
+     *     description="Retourne le détail d'un mobile",
+     *     @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=Mobile::class))
+     *     )
+     * )
+     *
+     * @OA\Tag(name="Mobiles")
+     *
+     * @param MobileRepository $mobileRepository
+     * @param SerializerInterface $serializer
+     * @param Request $request
+     * @return JsonResponse
+     */
     #[Route('/api/mobiles/{id}', name: 'detailMobile', methods: ['GET'])]
     public function getDetailMobile(Mobile $mobile, SerializerInterface $serializer): JsonResponse 
     {
