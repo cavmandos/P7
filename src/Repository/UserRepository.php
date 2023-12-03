@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Customer;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -21,11 +22,15 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
-    public function findAllWithPagination($page, $limit) {
+    public function findAllWithPagination(Customer $customer, $page, $limit) {
         $qb = $this->createQueryBuilder('b')
+            ->select('u')
+            ->from('App\Entity\User', 'u')
+            ->innerJoin('u.customer', 'c')
+            ->where('u.customer = :customerObject')
             ->setFirstResult(($page - 1) * $limit)
-            ->setMaxResults($limit);
-        
+            ->setMaxResults($limit)
+            ->setParameter(':customerObject', $customer);
         $query = $qb->getQuery();
         $query->setFetchMode(User::class, "author", \Doctrine\ORM\Mapping\ClassMetadata::FETCH_EAGER);
         return $query->getResult();
