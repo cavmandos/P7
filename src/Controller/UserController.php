@@ -36,8 +36,27 @@ class UserController extends AbstractController
      *        @OA\Items(ref=@Model(type=User::class,groups={"getUser"}))
      *     )
      * )
+     * 
+     * @OA\Response(
+     *     response=401,
+     *     description="Non autorisé : JWT expiré",
+     *     @OA\JsonContent(
+     *        @OA\Property(
+     *         property="code",
+     *         type="integer",
+     *         example="401"
+     *        ),
+     *        @OA\Property(
+     *         property="message",
+     *         type="string",
+     *         example="JWT expiré"
+     *        ),
+     *     )
+     * )
+     * 
      * @OA\Parameter(
      *     name="page",
+     *     example="1",
      *     in="query",
      *     description="La page que l'on veut récupérer",
      *     @OA\Schema(type="int")
@@ -45,6 +64,7 @@ class UserController extends AbstractController
      *
      * @OA\Parameter(
      *     name="limit",
+     *     example="3",
      *     in="query",
      *     description="Le nombre d'éléments que l'on veut récupérer",
      *     @OA\Schema(type="int")
@@ -83,6 +103,35 @@ class UserController extends AbstractController
      *        @OA\Items(ref=@Model(type=User::class,groups={"getUser"}))
      *     )
      * )
+     * 
+     * @OA\Response(
+     *     response=401,
+     *     description="Non autorisé : JWT expiré",
+     *     @OA\JsonContent(
+     *        @OA\Property(
+     *         property="code",
+     *         type="integer",
+     *         example="401"
+     *        ),
+     *        @OA\Property(
+     *         property="message",
+     *         type="string",
+     *         example="JWT expiré"
+     *        ),
+     *     )
+     * )
+     * 
+     * @OA\Response(
+     *     response=404,
+     *     description="Aucun utilisateur trouvé à cet identifiant",
+     *     @OA\JsonContent(
+     *        @OA\Property(
+     *         property="error",
+     *         type="string",
+     *         example="Aucun utilisateur trouvé"
+     *        )
+     *     )
+     * )
      *
      * @OA\Tag(name="Users")
      *
@@ -116,11 +165,28 @@ class UserController extends AbstractController
      * Cette méthode permet de supprimer un utilisateur.
      *
      * @OA\Response(
-     *     response=200,
-     *     description="Supprimer un utilisateur",
+     *     response=204,
+     *     description="Suppression d'un utilisateur",
      *     @OA\JsonContent(
      *        type="array",
      *        @OA\Items(ref=@Model(type=User::class,groups={"getUser"}))
+     *     )
+     * )
+     * 
+     * @OA\Response(
+     *     response=401,
+     *     description="Non autorisé : JWT expiré",
+     *     @OA\JsonContent(
+     *        @OA\Property(
+     *         property="code",
+     *         type="integer",
+     *         example="401"
+     *        ),
+     *        @OA\Property(
+     *         property="message",
+     *         type="string",
+     *         example="JWT expiré"
+     *        ),
      *     )
      * )
      *
@@ -152,11 +218,28 @@ class UserController extends AbstractController
      * Cette méthode permet de créer un utilisateur.
      *
      * @OA\Response(
-     *     response=200,
-     *     description="Créer un utilisateur",
+     *     response=201,
+     *     description="Création d'un utilisateur",
      *     @OA\JsonContent(
      *        type="array",
      *        @OA\Items(ref=@Model(type=User::class,groups={"getUser"}))
+     *     )
+     * )
+     * 
+     * @OA\Response(
+     *     response=401,
+     *     description="Non autorisé : JWT expiré",
+     *     @OA\JsonContent(
+     *        @OA\Property(
+     *         property="code",
+     *         type="integer",
+     *         example="401"
+     *        ),
+     *        @OA\Property(
+     *         property="message",
+     *         type="string",
+     *         example="JWT expiré"
+     *        ),
      *     )
      * )
      *

@@ -30,7 +30,6 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *      "create",
  *      href = @Hateoas\Route(
  *          "createUser",
- *          parameters = { "id" = "expr(object.getId())" },
  *      ),
  *      exclusion = @Hateoas\Exclusion(groups="getUser", excludeIf = "expr(not is_granted('ROLE_ADMIN'))"),
  * )
