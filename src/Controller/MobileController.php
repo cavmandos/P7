@@ -29,6 +29,24 @@ class MobileController extends AbstractController
      *        @OA\Items(ref=@Model(type=Mobile::class))
      *     )
      * )
+     * 
+     * @OA\Response(
+     *     response=401,
+     *     description="Non autorisé : JWT expiré",
+     *     @OA\JsonContent(
+     *        @OA\Property(
+     *         property="code",
+     *         type="integer",
+     *         example="401"
+     *        ),
+     *        @OA\Property(
+     *         property="message",
+     *         type="string",
+     *         example="JWT expiré"
+     *        ),
+     *     )
+     * )
+     * 
      * @OA\Parameter(
      *     name="page",
      *     in="query",
@@ -76,10 +94,45 @@ class MobileController extends AbstractController
      *        @OA\Items(ref=@Model(type=Mobile::class))
      *     )
      * )
+     * 
+     * @OA\Response(
+     *     response=404,
+     *     description="Pas de produit trouvé à cet identifiant",
+     *     @OA\JsonContent(
+     *        @OA\Property(
+     *         property="error",
+     *         type="string",
+     *         example="Ce produit n'éxiste pas"
+     *        )
+     *     )
+     * )
+     * 
+     * @OA\Response(
+     *     response=401,
+     *     description="Non autorisé : JWT expiré",
+     *     @OA\JsonContent(
+     *        @OA\Property(
+     *         property="code",
+     *         type="integer",
+     *         example="401"
+     *        ),
+     *        @OA\Property(
+     *         property="message",
+     *         type="string",
+     *         example="JWT expiré"
+     *        ),
+     *     )
+     * )
+     * 
+     * @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     description="Le mobile que l'on souhaite récupérer"
+     * )
      *
      * @OA\Tag(name="Mobiles")
      *
-     * @param MobileRepository $mobileRepository
+     * @param Mobile $mobile
      * @param SerializerInterface $serializer
      * @param Request $request
      * @return JsonResponse
